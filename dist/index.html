@@ -1,0 +1,191 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="简历专家——基于目标岗位 JD 的 AI 简历优化 Agent" />
+  <title>简历专家 · JD 定制简历优化 Agent</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="简历专家首页">
+        <span class="brand-mark">简</span>
+        <span class="brand-name">简历专家</span>
+        <span class="brand-divider"></span>
+        <span class="brand-subtitle">JD 定制优化 Agent</span>
+      </a>
+      <div class="top-actions">
+        <span class="status-chip"><span class="status-dot"></span>本地 Mock AI</span>
+        <button class="btn btn-secondary btn-sm" id="resetBtn">重置项目</button>
+        <button class="btn btn-primary btn-sm" id="topCopyBtn" disabled>复制最终简历</button>
+      </div>
+    </header>
+
+    <aside class="sidebar">
+      <div class="project-summary">
+        <div class="project-kicker">当前项目</div>
+        <div class="project-title" id="sidebarRole">未命名岗位</div>
+        <div class="project-meta"><span id="sidebarCompany">等待输入</span><span>·</span><span id="sidebarProgress">0%</span></div>
+        <div class="thin-progress"><span id="globalProgress"></span></div>
+      </div>
+
+      <nav class="step-nav" aria-label="简历优化流程">
+        <button class="step-item active" data-step="input">
+          <span class="step-index">1</span><span class="step-copy"><b>输入材料</b><small>岗位与个人信息</small></span><span class="step-state">●</span>
+        </button>
+        <button class="step-item" data-step="jd">
+          <span class="step-index">2</span><span class="step-copy"><b>JD 解析</b><small>提炼岗位画像</small></span><span class="step-state">—</span>
+        </button>
+        <button class="step-item" data-step="diagnosis">
+          <span class="step-index">3</span><span class="step-copy"><b>简历诊断</b><small>定位核心问题</small></span><span class="step-state">—</span>
+        </button>
+        <button class="step-item" data-step="matching">
+          <span class="step-index">4</span><span class="step-copy"><b>匹配分析</b><small>证据逐项对齐</small></span><span class="step-state">—</span>
+        </button>
+        <button class="step-item" data-step="questions">
+          <span class="step-index">5</span><span class="step-copy"><b>经历追问</b><small>挖掘有效证据</small></span><span class="step-state">—</span>
+        </button>
+        <button class="step-item" data-step="optimization">
+          <span class="step-index">6</span><span class="step-copy"><b>简历优化</b><small>重构表达方式</small></span><span class="step-state">—</span>
+        </button>
+        <button class="step-item" data-step="interview">
+          <span class="step-index">7</span><span class="step-copy"><b>面试准备</b><small>预测追问风险</small></span><span class="step-state">—</span>
+        </button>
+        <button class="step-item" data-step="export">
+          <span class="step-index">8</span><span class="step-copy"><b>导出结果</b><small>复制完整简历</small></span><span class="step-state">—</span>
+        </button>
+      </nav>
+
+      <div class="sidebar-note">
+        <span class="note-icon">i</span>
+        <div><b>表达真实性优先</b><p>Agent 会标记缺少证据与可能夸大的内容。</p></div>
+      </div>
+    </aside>
+
+    <main class="workspace">
+      <section class="view active" id="view-input">
+        <div class="page-heading">
+          <div><div class="eyebrow">STEP 01 · CONTEXT</div><h1>创建一次岗位定制优化</h1><p>提供目标岗位和原始经历。材料越具体，建议越可靠。</p></div>
+          <button class="btn btn-secondary" id="sampleBtn"><span>✦</span> 使用示例数据</button>
+        </div>
+
+        <div class="form-card">
+          <div class="section-title-row"><div><h2>目标岗位</h2><p>定义本次优化的方向与边界</p></div><span class="required-note">* 必填项</span></div>
+          <div class="form-grid three">
+            <label class="field"><span>目标岗位 *</span><input id="role" type="text" placeholder="例如：AI 产品经理" /></label>
+            <label class="field"><span>目标行业</span><input id="industry" type="text" placeholder="例如：企业服务 / AI" /></label>
+            <label class="field"><span>公司类型</span><select id="companyType"><option value="">请选择</option><option>AI 创业公司</option><option>互联网大厂</option><option>ToB SaaS</option><option>传统企业数字化</option></select></label>
+            <label class="field"><span>求职阶段</span><select id="stage"><option value="">请选择</option><option>准备投递</option><option>已开始投递</option><option>面试中</option><option>探索机会</option></select></label>
+            <label class="field span-2"><span>希望突出能力</span><input id="strengths" type="text" placeholder="用逗号分隔，例如：需求分析、数据能力、AI 产品设计" /></label>
+          </div>
+        </div>
+
+        <div class="form-card">
+          <div class="section-title-row"><div><h2>分析材料</h2><p>内容仅用于本地演示，不会上传</p></div><span class="secure-note"><span>●</span> 本地处理</span></div>
+          <div class="stack-fields">
+            <label class="field"><span>目标岗位 JD *</span><textarea id="jdInput" rows="8" placeholder="粘贴完整的职位描述，包括岗位职责、任职要求等"></textarea><small><span id="jdCount">0</span> 字</small></label>
+            <label class="field"><span>原始简历 *</span><textarea id="resumeInput" rows="10" placeholder="粘贴原始简历全文，建议包含完整的工作经历和项目经历"></textarea><small><span id="resumeCount">0</span> 字</small></label>
+            <label class="field"><span>补充信息</span><textarea id="extraInput" rows="4" placeholder="可补充尚未写入简历的项目成果、数据、职责边界或转型动机"></textarea></label>
+          </div>
+        </div>
+
+        <div class="start-panel">
+          <div><b>材料准备好了吗？</b><p>预计生成岗位画像、匹配诊断、优化建议与面试材料。</p></div>
+          <button class="btn btn-primary btn-lg" id="analyzeBtn"><span>开始分析</span><span class="arrow">→</span></button>
+        </div>
+      </section>
+
+      <section class="view" id="view-jd">
+        <div class="page-heading result-heading">
+          <div><div class="eyebrow">STEP 02 · JOB PROFILE</div><h1>JD 解析</h1><p>已将岗位要求拆解为可执行的简历优化标准。</p></div>
+          <span class="analysis-stamp">分析完成 · 置信度 92%</span>
+        </div>
+        <div class="summary-banner">
+          <div class="ai-avatar">AI</div>
+          <div><b>一句话岗位画像</b><p>这是一个面向企业场景、强调从需求洞察到产品落地闭环的 AI 产品经理岗位，既需要扎实的 ToB 产品能力，也需要对大模型能力边界、评测与应用设计有实际理解。</p></div>
+        </div>
+        <div class="grid-2">
+          <article class="content-card"><div class="card-head"><h2>核心职责</h2><span class="count-badge">5 项</span></div><ol class="number-list"><li><b>AI 产品规划与设计</b><span>负责企业级 AI 产品的需求分析、方案设计和路线图规划</span></li><li><b>场景挖掘与落地</b><span>深入业务流程，识别大模型可落地的高价值场景</span></li><li><b>跨团队项目推进</b><span>协同算法、研发、设计与业务团队完成产品交付</span></li><li><b>数据评测与迭代</b><span>搭建效果指标与评测体系，驱动产品持续优化</span></li><li><b>市场与竞品洞察</b><span>跟踪 AI 技术趋势及竞品，形成产品策略判断</span></li></ol></article>
+          <article class="content-card"><div class="card-head"><h2>候选人画像</h2><span class="badge badge-indigo">中高阶 IC</span></div><div class="persona"><div class="persona-row"><span>经验</span><b>3–5 年产品经验</b></div><div class="persona-row"><span>领域</span><b>企业服务 / AI 应用</b></div><div class="persona-row"><span>优势</span><b>业务抽象 + 数据驱动</b></div><div class="persona-row"><span>特质</span><b>结果导向、强协同</b></div></div><div class="insight-box"><b>Agent 洞察</b><p>岗位并不强求算法背景，但会重点验证候选人是否真正理解 AI 的能力边界，以及能否把技术转化为业务价值。</p></div></article>
+        </div>
+        <div class="grid-2">
+          <article class="content-card"><div class="card-head"><h2>显性要求</h2><span class="badge badge-gray">JD 原文</span></div><div class="tag-cloud"><span>3 年以上产品经验</span><span>ToB 产品经验</span><span>AI / 大模型认知</span><span>需求分析</span><span>数据分析</span><span>项目管理</span><span>PRD / 原型</span><span>跨团队协作</span></div></article>
+          <article class="content-card"><div class="card-head"><h2>隐性要求</h2><span class="badge badge-amber">Agent 推断</span></div><ul class="check-list amber"><li>能在不确定场景中定义问题与成功标准</li><li>有从 0 到 1 推动新产品的主人翁意识</li><li>能与算法团队讨论效果、成本和可行性</li><li>有清晰的商业价值与 ROI 判断意识</li></ul></article>
+        </div>
+        <article class="content-card table-card"><div class="card-head"><div><h2>核心能力模型</h2><p>简历筛选与面试评估的主要权重</p></div></div><div class="table-wrap"><table><thead><tr><th>能力维度</th><th>权重</th><th>JD 关键词</th><th>判断标准</th></tr></thead><tbody><tr><td><b>ToB 产品能力</b></td><td><span class="weight">25%</span></td><td>企业级、业务流程、解决方案</td><td>有复杂业务系统的完整产品闭环</td></tr><tr><td><b>AI 产品认知</b></td><td><span class="weight">25%</span></td><td>大模型、Prompt、RAG、评测</td><td>理解技术边界并有落地思路</td></tr><tr><td><b>需求与场景洞察</b></td><td><span class="weight">20%</span></td><td>场景挖掘、用户研究、价值</td><td>能从业务痛点抽象产品机会</td></tr><tr><td><b>数据驱动</b></td><td><span class="weight">15%</span></td><td>指标、数据分析、持续迭代</td><td>用数据定义与验证产品效果</td></tr><tr><td><b>项目推动</b></td><td><span class="weight">15%</span></td><td>跨团队、推进、落地</td><td>复杂协作下仍能按期交付</td></tr></tbody></table></div></article>
+        <div class="next-row"><span>岗位标准已建立，下一步诊断简历差距</span><button class="btn btn-primary next-btn" data-next="diagnosis">查看简历诊断 →</button></div>
+      </section>
+
+      <section class="view" id="view-diagnosis">
+        <div class="page-heading result-heading"><div><div class="eyebrow">STEP 03 · DIAGNOSIS</div><h1>简历诊断</h1><p>从岗位匹配、内容证据与表达质量三个层面定位问题。</p></div><span class="analysis-stamp">基于当前 JD</span></div>
+        <div class="score-layout">
+          <article class="content-card score-card"><div class="score-ring" style="--score:76"><div><strong>76</strong><small>/ 100</small></div></div><h2>整体匹配度良好</h2><p>业务产品基本盘扎实，但 AI 产品证据偏弱。补齐 AI 场景实践与评测思路后，有机会进入高匹配区间。</p><div class="score-delta"><span>预计优化后</span><b>86–90 分</b></div></article>
+          <article class="content-card dimension-card"><div class="card-head"><h2>维度评分</h2><span class="badge badge-gray">岗位权重已校准</span></div><div class="metric"><div><b>ToB 产品能力</b><span>88</span></div><div class="bar"><i style="width:88%"></i></div></div><div class="metric"><div><b>需求与场景洞察</b><span>82</span></div><div class="bar"><i style="width:82%"></i></div></div><div class="metric"><div><b>项目推动</b><span>80</span></div><div class="bar"><i style="width:80%"></i></div></div><div class="metric"><div><b>数据驱动</b><span>76</span></div><div class="bar"><i style="width:76%"></i></div></div><div class="metric weak"><div><b>AI 产品认知</b><span>48</span></div><div class="bar"><i style="width:48%"></i></div></div></article>
+        </div>
+        <div class="grid-2">
+          <article class="content-card"><div class="card-head"><h2>主要问题</h2><span class="count-badge danger">4 个</span></div><div class="issue-list"><div class="issue"><span class="issue-level high">高</span><div><b>AI 相关经历未形成有效证据</b><p>仅在技能栏提到 ChatGPT，没有产品场景、过程或结果。</p></div></div><div class="issue"><span class="issue-level high">高</span><div><b>成果描述缺少业务价值</b><p>大量使用“负责、参与”，没有体现关键决策与影响。</p></div></div><div class="issue"><span class="issue-level mid">中</span><div><b>ERP / WMS 经历与目标岗位脱节</b><p>复杂业务抽象优势未被翻译为 AI 岗位需要的能力。</p></div></div><div class="issue"><span class="issue-level low">低</span><div><b>职业摘要缺少转型叙事</b><p>招聘方无法快速理解“为何适合 AI 产品”。</p></div></div></div></article>
+          <article class="content-card"><div class="card-head"><h2>优先修改建议</h2><span class="badge badge-indigo">按收益排序</span></div><ol class="priority-list"><li><span>P0</span><div><b>补充 AI 场景化实践</b><p>挖掘报表问数、知识检索或流程助手相关尝试，说明你的问题定义和验证过程。</p></div></li><li><span>P0</span><div><b>量化核心业务成果</b><p>补齐效率、准确率、使用率、交付周期等数据或可信区间。</p></div></li><li><span>P1</span><div><b>重写职业摘要</b><p>建立“ToB 复杂业务能力 → AI 产品场景落地”的连续叙事。</p></div></li><li><span>P1</span><div><b>重构经历 Bullet</b><p>使用行动—方法—结果结构，明确个人贡献边界。</p></div></li></ol></article>
+        </div>
+        <div class="next-row"><span>已锁定 4 个高价值改进方向</span><button class="btn btn-primary next-btn" data-next="matching">查看匹配证据 →</button></div>
+      </section>
+
+      <section class="view" id="view-matching">
+        <div class="page-heading result-heading"><div><div class="eyebrow">STEP 04 · EVIDENCE MAP</div><h1>匹配分析</h1><p>逐项核对 JD 要求与简历证据，明确哪些可强化、哪些需要补充。</p></div><div class="legend"><span><i class="dot strong"></i>强</span><span><i class="dot medium"></i>中</span><span><i class="dot weak"></i>弱</span></div></div>
+        <article class="content-card table-card match-table"><div class="table-wrap"><table><thead><tr><th>JD 要求</th><th>简历证据</th><th>证据强度</th><th>是否补充</th><th>优化建议</th></tr></thead><tbody>
+          <tr><td><b>企业级产品经验</b><small>高权重</small></td><td>负责 ERP、WMS 两类企业系统，覆盖采购、库存与经营分析</td><td><span class="evidence strong">强</span></td><td><span class="no-need">无需</span></td><td>强调复杂业务链路和多角色协同</td></tr>
+          <tr><td><b>需求分析与产品设计</b><small>高权重</small></td><td>完成业务访谈、PRD、原型及上线跟进</td><td><span class="evidence strong">强</span></td><td><span class="no-need">无需</span></td><td>增加需求取舍依据和关键方案决策</td></tr>
+          <tr><td><b>AI / 大模型产品经验</b><small>高权重</small></td><td>使用 ChatGPT 辅助需求文档；尝试自然语言问数</td><td><span class="evidence weak">弱</span></td><td><span class="need">需要</span></td><td>补充场景定义、方案、评测标准与验证结果</td></tr>
+          <tr><td><b>数据驱动迭代</b><small>中权重</small></td><td>建设经营报表，支持管理层查看核心经营指标</td><td><span class="evidence medium">中</span></td><td><span class="need">建议</span></td><td>补充指标口径治理与使用后决策改善</td></tr>
+          <tr><td><b>跨团队项目推进</b><small>中权重</small></td><td>协同研发、实施与客户业务团队完成多个版本上线</td><td><span class="evidence medium">中</span></td><td><span class="need">建议</span></td><td>补充项目规模、冲突处理和交付周期</td></tr>
+          <tr><td><b>从 0 到 1</b><small>中权重</small></td><td>从零建设经营数据报表产品</td><td><span class="evidence medium">中</span></td><td><span class="need">建议</span></td><td>明确从问题发现到首版验证的闭环</td></tr>
+          <tr><td><b>技术理解与协作</b><small>中权重</small></td><td>能与研发讨论接口、数据模型及系统集成</td><td><span class="evidence medium">中</span></td><td><span class="need">需要</span></td><td>翻译为与算法团队协作的可迁移能力</td></tr>
+        </tbody></table></div></article>
+        <div class="gap-summary"><div><span class="gap-number">7</span><span>项要求已核对</span></div><div><span class="gap-number green">2</span><span>项强证据</span></div><div><span class="gap-number amber">4</span><span>项待补充</span></div><p>当前最大差距：<b>缺少可验证的 AI 产品实践闭环</b></p></div>
+        <div class="next-row"><span>通过针对性追问，把隐性经验转化为简历证据</span><button class="btn btn-primary next-btn" data-next="questions">开始经历追问 →</button></div>
+      </section>
+
+      <section class="view" id="view-questions">
+        <div class="page-heading result-heading"><div><div class="eyebrow">STEP 05 · DEEP DIVE</div><h1>经历追问</h1><p>请像回答面试问题一样提供事实。Agent 会将回答转化为可信的简历表达。</p></div><button class="btn btn-secondary" id="generateAllBtn">批量生成表达</button></div>
+        <div class="question-stats"><div><b id="answeredCount">0 / 7</b><span>已回答</span></div><div class="question-progress"><span id="questionProgress"></span></div><p>建议至少回答 3 个高优先级问题</p></div>
+        <div class="question-list" id="questionList"></div>
+        <div class="next-row"><span>回答会自动保存到当前浏览器</span><button class="btn btn-primary next-btn" data-next="optimization">进入简历优化 →</button></div>
+      </section>
+
+      <section class="view" id="view-optimization">
+        <div class="page-heading result-heading"><div><div class="eyebrow">STEP 06 · REWRITE</div><h1>简历优化</h1><p>对比每处修改，保持表达清晰、可信，并与目标岗位直接相关。</p></div><span class="analysis-stamp" id="toneStamp">当前风格：AI 产品</span></div>
+        <div class="tone-toolbar"><span>快速调整表达</span><button class="tone-btn" data-tone="concise">更简洁</button><button class="tone-btn" data-tone="modest">降低夸张</button><button class="tone-btn active" data-tone="ai">更偏 AI 产品</button><button class="tone-btn" data-tone="tob">更偏 ToB SaaS</button></div>
+        <div id="comparisonList" class="comparison-list"></div>
+        <article class="content-card risk-card"><div><span class="risk-icon">!</span></div><div><h2>真实性风险提示</h2><p>以下词汇需要准备可验证的过程或数据：<b>主导、显著提升、从 0 到 1、智能化</b>。若你仅参与部分环节，请将“主导”改为“负责”或“参与”。</p></div><button class="btn btn-secondary" id="modestBtn">一键降低夸张</button></article>
+        <div class="next-row"><span>优化版简历已生成，可继续微调表达风格</span><button class="btn btn-primary next-btn" data-next="export">查看最终简历 →</button></div>
+      </section>
+
+      <section class="view" id="view-interview">
+        <div class="page-heading result-heading"><div><div class="eyebrow">STEP 07 · INTERVIEW KIT</div><h1>面试准备</h1><p>基于目标岗位和优化版简历，提前准备高概率追问与证据。</p></div><button class="btn btn-secondary" id="copyIntroBtn">复制自我介绍</button></div>
+        <div class="grid-3 prep-overview"><article class="mini-card"><span class="mini-label">高概率追问</span><strong>10</strong><small>建议逐一演练</small></article><article class="mini-card"><span class="mini-label">待准备证据</span><strong>6</strong><small>数据、文档或案例</small></article><article class="mini-card warning"><span class="mini-label">表达风险</span><strong>3</strong><small>面试前确认边界</small></article></div>
+        <div class="interview-layout"><div><article class="content-card"><div class="card-head"><h2>可能追问</h2><span class="count-badge">10 题</span></div><div class="qa-list" id="qaList"></div></article></div><div class="prep-side"><article class="content-card"><div class="card-head"><h2>需要准备的证据</h2></div><ul class="evidence-list"><li><span>01</span>经营报表上线前后的使用率或决策效率</li><li><span>02</span>WMS 库存准确率的统计口径与基线</li><li><span>03</span>代表性 PRD 或复杂流程原型</li><li><span>04</span>自然语言问数 Demo 与评测样例</li><li><span>05</span>项目延期或需求冲突的处理案例</li><li><span>06</span>客户访谈记录与需求优先级方法</li></ul></article><article class="content-card"><div class="card-head"><h2>建议补充的数据</h2></div><div class="data-chips"><span>活跃用户数</span><span>使用频次</span><span>节省工时</span><span>准确率</span><span>交付周期</span><span>客户数</span></div></article><article class="content-card danger-soft"><div class="card-head"><h2>可能夸大的表达</h2></div><p>“主导 AI 问数产品落地”——目前材料只支持原型验证。建议使用“完成 AI 问数方案设计与内部验证”。</p></article></div></div>
+        <article class="content-card intro-card"><div class="card-head"><div><h2>90 秒自我介绍</h2><p>针对 AI 产品经理岗位生成</p></div><span class="badge badge-indigo">约 280 字</span></div><div class="intro-text" id="introText">您好，我有 4 年企业服务产品经验，过去主要负责 ERP、WMS 和经营数据产品，长期在复杂业务流程、跨角色协同和数据决策场景中工作。<br><br>我曾从 0 到 1 建设经营数据报表体系，统一核心指标口径，也负责过仓储业务的流程优化。这些经历让我形成了把业务问题抽象为产品方案、再推动多团队落地的能力。最近我在尝试将大模型用于自然语言问数和产品工作流，完成了从场景梳理、方案设计到内部验证的初步闭环，也系统学习了 RAG、Prompt 设计和 AI 产品评测。<br><br>我希望转向 AI 产品，是因为我看到大模型正在重构企业软件的交互和决策方式。我能带来的价值，是把 ToB 场景理解、数据能力和产品落地经验结合起来，帮助 AI 技术真正进入业务流程并产生可衡量的结果。</div></article>
+        <div class="next-row"><span>建议结合真实案例反复演练，避免背诵感</span><button class="btn btn-primary next-btn" data-next="export">查看并导出结果 →</button></div>
+      </section>
+
+      <section class="view" id="view-export">
+        <div class="page-heading result-heading"><div><div class="eyebrow">STEP 08 · FINAL RESUME</div><h1>最终简历</h1><p>已按目标岗位重构，可直接复制后继续排版。</p></div><div class="export-actions"><button class="btn btn-secondary" id="exportPlaceholderBtn">导出 PDF</button><button class="btn btn-primary" id="copyResumeBtn">复制最终简历</button></div></div>
+        <div class="final-grid"><article class="resume-paper" id="finalResume">
+          <header class="resume-header"><div><h1>林澈</h1><p>AI 产品经理｜4 年 ToB 产品经验</p></div><div class="contact">138 **** 8899<br>linche@example.com<br>上海</div></header>
+          <section><h2>求职意向</h2><p>AI 产品经理 · 企业服务 / AI 应用方向</p></section>
+          <section><h2>职业摘要</h2><p>4 年企业服务产品经验，覆盖 ERP、WMS 与经营数据产品，具备复杂业务建模、跨团队项目推进和数据驱动迭代能力。拥有 AI 自然语言问数场景的方案设计与内部验证经验，理解 Prompt、RAG 与 AI 产品评测基本方法。擅长将业务问题抽象为产品方案，推动企业级产品从需求洞察到上线落地。</p></section>
+          <section><h2>核心能力</h2><div class="skill-row"><span>ToB 产品规划</span><span>复杂业务建模</span><span>AI 场景设计</span><span>需求分析</span><span>数据产品</span><span>跨团队协作</span></div></section>
+          <section><h2>工作经历</h2><div class="resume-role"><div class="role-line"><b>云启科技 · 产品经理</b><span>2022.03 — 至今</span></div><small>企业数字化产品部｜上海</small><ul><li>负责 ERP 与 WMS 产品规划及迭代，深入采购、库存、履约等关键流程，持续将客户业务问题转化为可落地的产品方案。</li><li>重构入库与盘点流程，通过规则校验、异常任务闭环和关键节点数据追踪，将库存准确率从约 92% 提升至 98%。</li><li>从 0 到 1 建设经营数据报表体系，统一销售、库存、履约等 20+ 核心指标口径，支持管理层按日查看经营情况。</li><li>协同研发、实施及客户业务团队推进多个版本交付，通过需求分级和里程碑管理，将重点项目平均交付周期缩短约 20%。</li><li>面向经营分析场景完成自然语言问数方案设计与内部 Demo 验证，梳理 30+ 高频问题，设计问答流程、结果溯源与基础评测集。</li></ul></div><div class="resume-role"><div class="role-line"><b>明川软件 · 产品助理</b><span>2020.07 — 2022.02</span></div><small>供应链产品组｜杭州</small><ul><li>参与供应链 SaaS 产品需求分析、原型设计和上线跟进，累计支持 8 家制造业客户完成流程数字化。</li><li>建立客户反馈分类与版本复盘机制，提升高频问题识别效率，为季度产品规划提供依据。</li></ul></div></section>
+          <section><h2>项目经历</h2><div class="resume-role"><div class="role-line"><b>AI 自然语言问数验证项目</b><span>2025.05 — 2025.08</span></div><ul><li>针对业务人员查数门槛高、口径易误解的问题，设计基于大模型的自然语言问数方案，覆盖意图识别、指标映射、结果解释与来源追溯。</li><li>梳理销售和库存场景 30+ 高频问题，建立准确性、可解释性与响应效率三类评测维度，完成内部 Demo 和首轮验证。</li><li>识别幻觉、复杂口径与权限控制等风险，提出结构化指标层、引用溯源和高风险问题拒答机制。</li></ul></div></section>
+          <section class="resume-bottom-grid"><div><h2>技能工具</h2><p>Axure、Figma、SQL、Excel、Jira、ChatGPT、Prompt 设计、RAG 基础</p></div><div><h2>教育背景</h2><p><b>华东理工大学</b><br>信息管理与信息系统 · 本科<br>2016 — 2020</p></div></section>
+        </article><aside class="export-side"><article class="content-card completion-card"><div class="completion-ring">92%</div><h2>简历完整度</h2><p>核心信息已经齐全，可进入投递前校验。</p><ul><li class="done">岗位关键词覆盖充分</li><li class="done">核心成果已量化</li><li class="done">AI 转型叙事清晰</li><li class="todo">建议补充作品集链接</li></ul></article><article class="content-card"><div class="card-head"><h2>投递前检查</h2></div><label class="check-item"><input type="checkbox" checked><span>确认所有数据真实可解释</span></label><label class="check-item"><input type="checkbox" checked><span>确认“主导/负责”的边界准确</span></label><label class="check-item"><input type="checkbox"><span>补充可公开的项目作品</span></label><label class="check-item"><input type="checkbox"><span>针对具体公司微调摘要</span></label></article><button class="btn btn-primary btn-block" id="copyResumeBtnSide">复制为纯文本</button><button class="btn btn-secondary btn-block" id="showExportBtn">更多导出方式</button></aside></div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"><span>✓</span><b id="toastText">已复制</b></div>
+  <div class="modal-backdrop" id="modalBackdrop" aria-hidden="true"><div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle"><button class="modal-close" id="modalClose" aria-label="关闭">×</button><div class="modal-icon">↗</div><h2 id="modalTitle">更多导出方式</h2><p>当前演示版本支持复制纯文本。Word、PDF 与在线简历链接将在接入真实服务后开放。</p><div class="export-option-list"><div><span class="file-icon">W</span><div><b>Word 文档</b><small>保留专业排版与可编辑格式</small></div><span class="coming">即将支持</span></div><div><span class="file-icon pdf">P</span><div><b>PDF 文件</b><small>适合直接投递与打印</small></div><span class="coming">即将支持</span></div><div><span class="file-icon link">↗</span><div><b>在线简历链接</b><small>随时更新并追踪访问</small></div><span class="coming">即将支持</span></div></div><button class="btn btn-primary btn-block" id="modalCopyBtn">先复制纯文本</button></div></div>
+  <script src="./app.js"></script>
+</body>
+</html>
